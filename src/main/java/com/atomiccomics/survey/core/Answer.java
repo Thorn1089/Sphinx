@@ -1,4 +1,4 @@
-package com.atomiccomics.survey;
+package com.atomiccomics.survey.core;
 
 /**
  * <p>
