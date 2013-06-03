@@ -1,4 +1,7 @@
-package com.atomiccomics.survey.core;
+package com.atomiccomics.survey.engine;
+
+import com.atomiccomics.survey.core.Answer;
+import com.atomiccomics.survey.core.Question;
 
 /**
  * <p>
