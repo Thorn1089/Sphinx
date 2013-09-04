@@ -7,13 +7,7 @@ package com.atomiccomics.survey.core;
  * 
  * @author Tom
  */
-public interface Section {
-
-	/**
-	 * @return A {@code boolean} describing whether or not the questions in this {@link Section} should
-	 * be shown to the respondent or not.
-	 */
-	boolean isVisible();
+public interface Section extends Visible {
 	
 	/**
 	 * @return True if this {@link Section} has more {@link Question#isVisible() visible} questions;

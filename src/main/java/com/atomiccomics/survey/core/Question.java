@@ -14,17 +14,11 @@ package com.atomiccomics.survey.core;
  * </p>
  * @author Tom
  */
-public interface Question {
+public interface Question extends Visible {
 
 	/**
 	 * @return A unique {@code String} identifying this {@link Question}.
 	 */
 	String id();
-	
-	/**
-	 * @return A {@code boolean} describing whether or not this {@link Question} should be shown to the
-	 * respondent.
-	 */
-	boolean isVisible();
 	
 }
