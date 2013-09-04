@@ -19,4 +19,10 @@ public interface Section extends Visible {
 	 */
 	@Nonnull List<Visible> children();
 	
+	/**
+	 * Provides a hook for this {@link Section} to perform some work before its children are traversed;
+	 * potentially generating new children dynamically at runtime.
+	 */
+	void prepareSection();
+	
 }
