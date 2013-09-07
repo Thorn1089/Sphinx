@@ -25,12 +25,15 @@ public final class SurveyDriver {
 	
 	private final QuestionAsker asker;
 	
+	private final SurveyTerminationListener listener;
+	
 	private ListIterator<Visible> curr;
 	
 	private Question lastAsked = null;
 	
-	public SurveyDriver(final Visible root, final QuestionAsker asker) {
+	public SurveyDriver(final Visible root, final QuestionAsker asker, final SurveyTerminationListener listener) {
 		this.asker = asker;
+		this.listener = listener;
 		curr = Lists.newArrayList(root).listIterator();
 	}
 	
@@ -54,7 +57,11 @@ public final class SurveyDriver {
 		if(curr.hasNext()) {
 			visit(curr.next(), Direction.FORWARD);
 		} else {
-			curr = stack.pop();//TODO Handle end
+			if(stack.isEmpty()) {
+				listener.surveyEnded();
+				return;
+			}
+			curr = stack.pop();
 			traverse(Direction.FORWARD);
 		}
 	}
@@ -63,7 +70,10 @@ public final class SurveyDriver {
 		if(curr.hasPrevious()) {
 			visit(curr.previous(), Direction.BACKWARD);
 		} else {
-			curr = stack.pop();//TODO Handle end
+			if(stack.isEmpty()) {
+				return;
+			}
+			curr = stack.pop();
 			traverse(Direction.BACKWARD);
 		}
 	}

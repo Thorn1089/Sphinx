@@ -1,5 +1,6 @@
 package com.atomiccomics.survey.engine.test;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -19,6 +20,7 @@ import com.atomiccomics.survey.core.Section;
 import com.atomiccomics.survey.core.Visible;
 import com.atomiccomics.survey.engine.QuestionAsker;
 import com.atomiccomics.survey.engine.SurveyDriver;
+import com.atomiccomics.survey.engine.SurveyTerminationListener;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SurveyDriverTest {
@@ -26,12 +28,15 @@ public class SurveyDriverTest {
 	@Mock
 	private QuestionAsker asker;
 	
+	@Mock
+	private SurveyTerminationListener listener;
+	
 	@Test
 	public void testForwardWithSingleQuestion() {
 		Question onlyQuestion = mock(Question.class);
 		when(onlyQuestion.isVisible()).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker);
+		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener);
 		driver.next();
 		
 		verify(asker).ask(onlyQuestion);
@@ -47,7 +52,7 @@ public class SurveyDriverTest {
 		when(first.isVisible()).thenReturn(true);
 		when(second.isVisible()).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(section, asker);
+		SurveyDriver driver = new SurveyDriver(section, asker, listener);
 		driver.next();
 		verify(asker).ask(first);
 	}
@@ -62,7 +67,7 @@ public class SurveyDriverTest {
 		when(first.isVisible()).thenReturn(true);
 		when(second.isVisible()).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(section, asker);
+		SurveyDriver driver = new SurveyDriver(section, asker, listener);
 		driver.next();
 		driver.next();
 		driver.previous();
@@ -84,10 +89,32 @@ public class SurveyDriverTest {
 		when(first.isVisible()).thenReturn(false);
 		when(second.isVisible()).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(section, asker);
+		SurveyDriver driver = new SurveyDriver(section, asker, listener);
 		driver.next();
 		verify(asker, never()).ask(first);
 		verify(asker).ask(second);
+	}
+	
+	@Test
+	public void testSurveyEndedWhenAllQuestionsAsked() {
+		Question onlyQuestion = mock(Question.class);
+		when(onlyQuestion.isVisible()).thenReturn(true);
+		
+		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener);
+		driver.next();
+		driver.next();
+		
+		verify(listener).surveyEnded();
+	}
+	
+	@Test
+	public void testNothingHappensWhenTryingToGoBackBeforeFirstQuestion() {
+		Question onlyQuestion = mock(Question.class);
+		when(onlyQuestion.isVisible()).thenReturn(true);
+		
+		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener);
+		driver.previous();
+		verify(asker, never()).ask(any(Question.class));
 	}
 
 }
