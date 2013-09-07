@@ -1,7 +1,7 @@
 package com.atomiccomics.survey.common;
 
 import com.atomiccomics.survey.core.Question;
-import com.google.common.base.Predicate;
+import com.atomiccomics.survey.core.VisiblePredicate;
 
 /**
  * The {@code TrueFalseQuestion} describes a simple question which can be answered either in the affirmative
@@ -13,7 +13,7 @@ public class TrueFalseQuestion implements Question {
 
 	private final String id;
 	
-	private final Predicate<Void> visible;
+	private final VisiblePredicate delegate;
 	
 	private final String questionText;
 	
@@ -24,15 +24,15 @@ public class TrueFalseQuestion implements Question {
 	/**
 	 * Creates a new {@link TrueFalseQuestion} with custom answer text for its options.
 	 * @param id A {@code String} uniquely identifying this instance.
-	 * @param visible A {@link Predicate} which describes whether or not this question is visible.
+	 * @param visible A {@link VisiblePredicate} which describes whether or not this question is visible.
 	 * @param questionText A {@code String} representing the actual question asked of the respondent.
 	 * @param trueText A {@code String} to display as the affirmative answer.
 	 * @param falseText A {@code String} to display as the negative answer.
 	 */
-	public TrueFalseQuestion(final String id, final Predicate<Void> visible, 
+	public TrueFalseQuestion(final String id, final VisiblePredicate delegate, 
 			final String questionText, final String trueText, final String falseText) {
 		this.id = id;
-		this.visible = visible;
+		this.delegate = delegate;
 		this.questionText = questionText;
 		this.trueText = trueText;
 		this.falseText = falseText;
@@ -41,11 +41,11 @@ public class TrueFalseQuestion implements Question {
 	/**
 	 * Creates a new {@link TrueFalseQuestion} which uses "true" and "false" as the answer text.
 	 * @param id A {@code String} uniquely identifying this instance.
-	 * @param visible A {@link Predicate} which describes whether or not this question is visible.
+	 * @param visible A {@link VisiblePredicate} which describes whether or not this question is visible.
 	 * @param questionText A {@code String} representing the actual question asked of the respondent.
 	 */
-	public TrueFalseQuestion(final String id, final Predicate<Void> visible, final String questionText) {
-		this(id, visible, questionText, Boolean.TRUE.toString(), Boolean.FALSE.toString());
+	public TrueFalseQuestion(final String id, final VisiblePredicate delegate, final String questionText) {
+		this(id, delegate, questionText, Boolean.TRUE.toString(), Boolean.FALSE.toString());
 	}
 	
 	@Override
@@ -55,7 +55,7 @@ public class TrueFalseQuestion implements Question {
 
 	@Override
 	public boolean isVisible() {
-		return visible.apply(null);
+		return delegate.isVisible();
 	}
 	
 	/**
