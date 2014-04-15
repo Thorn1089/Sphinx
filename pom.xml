@@ -5,6 +5,12 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>Sphinx Survey Engine</name>
   <description>The Sphinx survey engine project provides a generic yet powerful interface and language which describes complex, multi-part surveys. The framework can be extended by others to create custom question representations and can integrate with multiple views.</description>
+  
+  <properties>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
   <dependencies>
   	<dependency>
   		<groupId>junit</groupId>
