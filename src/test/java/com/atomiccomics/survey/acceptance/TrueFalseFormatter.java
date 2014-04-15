@@ -9,9 +9,9 @@ import com.atomiccomics.survey.engine.SurveyBlackboard;
 
 public class TrueFalseFormatter implements CommandLineQuestionFormatter {
 	
-	private SurveyBlackboard blackboard;
+	private final SurveyBlackboard blackboard;
 	
-	private Scanner scanner;
+	private final Scanner scanner;
 	
 	public TrueFalseFormatter(Scanner scanner, SurveyBlackboard blackboard) {
 		this.blackboard = blackboard;
