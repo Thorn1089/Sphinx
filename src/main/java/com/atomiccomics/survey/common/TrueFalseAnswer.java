@@ -26,4 +26,13 @@ public class TrueFalseAnswer implements Answer {
 		return answer;
 	}
 	
+	@Override
+	public boolean is(final Object candidate) {
+		if(candidate instanceof Boolean) {
+			return ((Boolean)candidate).equals(answer);
+		} else {
+			return false;
+		}
+	}
+	
 }

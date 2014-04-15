@@ -11,4 +11,11 @@ package com.atomiccomics.survey.core;
  */
 public interface Answer {
 
+	/**
+	 * Determines if the given object represents the same answer as this object.
+	 * @param candidate An object representing an answer to a question.
+	 * @return True if the given object represents the same answer data as this object.
+	 */
+	boolean is(Object candidate);
+	
 }
