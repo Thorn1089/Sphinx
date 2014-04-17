@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
+import com.atomiccomics.survey.common.MultipleChoiceAnswer;
 import com.atomiccomics.survey.common.MultipleChoiceQuestion;
 import com.atomiccomics.survey.common.StaticSection;
 import com.atomiccomics.survey.common.TrueFalseQuestion;
@@ -21,8 +23,6 @@ public class SampleCommandLineSurvey {
 	
 	private VisiblePredicate always = () -> true;
 	
-	private Answer wrong = (obj) -> false;
-	
 	public void run() {
 		try (Scanner scanner = new Scanner(System.in)) {
 			SampleBlackboard blackboard = new SampleBlackboard();
@@ -34,7 +34,10 @@ public class SampleCommandLineSurvey {
 			MultipleChoiceQuestion multi = new MultipleChoiceQuestion("Q-03", always, "What is your favorite pizza?", 
 					Arrays.asList("Pepperoni", "Cheese", "Sausage"));
 			TrueFalseQuestion veggie = new TrueFalseQuestion("Q-04", () -> {
-				return blackboard.check("Q-03").or(wrong).is("Cheese");
+				return blackboard.check("Q-03").transform((answer) -> {
+					final MultipleChoiceAnswer mca = (MultipleChoiceAnswer)answer;
+					return mca.getChoice().equals("Cheese");
+				}).or(false);
 			}, "Are you a vegetarian?");
 			Section section = new StaticSection(always, Arrays.<Visible> asList(first, second, multi, veggie));
 			

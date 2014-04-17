@@ -14,13 +14,4 @@ public class MultipleChoiceAnswer implements Answer {
 		return choice;
 	}
 	
-	@Override
-	public boolean is(final Object candidate) {
-		if(candidate instanceof String) {
-			return ((String) candidate).equals(choice);
-		} else {
-			return false;
-		}
-	}
-	
 }
