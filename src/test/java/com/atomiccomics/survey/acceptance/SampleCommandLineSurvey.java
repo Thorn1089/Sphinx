@@ -3,21 +3,25 @@ package com.atomiccomics.survey.acceptance;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
+
+
+
+import com.atomiccomics.survey.common.FillInQuestion;
 import com.atomiccomics.survey.common.MultipleChoiceAnswer;
 import com.atomiccomics.survey.common.MultipleChoiceQuestion;
 import com.atomiccomics.survey.common.StaticSection;
+import com.atomiccomics.survey.common.TrueFalseAnswer;
 import com.atomiccomics.survey.common.TrueFalseQuestion;
 import com.atomiccomics.survey.core.Answer;
 import com.atomiccomics.survey.core.Section;
-import com.atomiccomics.survey.core.Visible;
 import com.atomiccomics.survey.core.VisiblePredicate;
 import com.atomiccomics.survey.engine.SurveyBlackboard;
 import com.atomiccomics.survey.engine.SurveyDriver;
-import com.google.common.base.Optional;
 
 public class SampleCommandLineSurvey {
 	
@@ -34,20 +38,31 @@ public class SampleCommandLineSurvey {
 			MultipleChoiceQuestion multi = new MultipleChoiceQuestion("Q-03", always, "What is your favorite pizza?", 
 					Arrays.asList("Pepperoni", "Cheese", "Sausage"));
 			TrueFalseQuestion veggie = new TrueFalseQuestion("Q-04", () -> {
-				return blackboard.check("Q-03").transform((answer) -> {
+				return blackboard.check("Q-03").map((answer) -> {
 					final MultipleChoiceAnswer mca = (MultipleChoiceAnswer)answer;
 					return mca.getChoice().equals("Cheese");
-				}).or(false);
+				}).orElse(false);
 			}, "Are you a vegetarian?");
-			Section section = new StaticSection(always, Arrays.<Visible> asList(first, second, multi, veggie));
+			Section intro = new StaticSection(always, Arrays.asList(first, second, multi, veggie));
+			
+			FillInQuestion length = new FillInQuestion("V-01", always, "How long have you been a vegetarian?");
+			Section vegetarian = new StaticSection(() -> {
+				return blackboard.check("Q-04").map((answer) -> {
+					final TrueFalseAnswer tfa = (TrueFalseAnswer)answer;
+					return tfa.get();
+				}).orElse(false);
+			}, Arrays.asList(length));
+			
+			Section survey = new StaticSection(always, Arrays.asList(intro, vegetarian));
 			
 			CommandLineAsker asker = new CommandLineAsker();
 			asker.registerFormatter(new TrueFalseFormatter(scanner, blackboard));
 			asker.registerFormatter(new MultipleChoiceFormatter(blackboard, scanner));
+			asker.registerFormatter(new FillInQuestionFormatter(blackboard, scanner));
 			
 			final AtomicBoolean flag = new AtomicBoolean(true);
 			
-			SurveyDriver driver = new SurveyDriver(section, asker,() -> flag.set(false));
+			SurveyDriver driver = new SurveyDriver(survey, asker,() -> flag.set(false));
 			
 			while(flag.get()) {
 				driver.next();
@@ -66,7 +81,7 @@ public class SampleCommandLineSurvey {
 		
 		@Override
 		public Optional<Answer> check(String question) {
-			return Optional.fromNullable(answers.get(question));
+			return Optional.ofNullable(answers.get(question));
 		}
 
 		@Override

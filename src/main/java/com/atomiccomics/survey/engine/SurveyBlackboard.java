@@ -1,9 +1,10 @@
 package com.atomiccomics.survey.engine;
 
+import java.util.Optional;
+
 import javax.annotation.Nonnull;
 
 import com.atomiccomics.survey.core.Answer;
-import com.google.common.base.Optional;
 
 /**
  * The {@code SurveyBlackboard} represents the current state of the survey as a blackboard system; that is,
