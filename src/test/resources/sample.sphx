@@ -1,0 +1,29 @@
+Start section Instructions
+Ask Instructions I-01
+	"This is a sample survey."
+	"Please follow all instructions."
+
+Ask Instructions I-02
+	"You will see several questions following"
+	"this one. Please read them carefully."
+
+Ask TrueFalseQuestion I-03
+	"Do you understand these instructions?"
+
+Ask TrueFalseQuestion I-04
+	"Are you sure?"
+Answer with
+	"Yes"
+	"No"
+End section
+
+Start section Demographics
+Ask MultipleChoiceQuestion D-01
+	"What is your ethnicity?"
+Answer with
+	"Caucasian"
+	"African-American"
+	"Asian"
+	"Other"
+	"I prefer not to answer"
+End section
