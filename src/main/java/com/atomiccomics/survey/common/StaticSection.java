@@ -24,7 +24,7 @@ public class StaticSection implements Section {
 	 * @param delegate A {@link VisiblePredicate} which determines if this section is visible.
 	 * @param children A {@code List} of {@link Visible} children belonging to this section.
 	 */
-	public StaticSection(final VisiblePredicate delegate, final List<Visible> children) {
+	public StaticSection(final VisiblePredicate delegate, final List<? extends Visible> children) {
 		this.delegate = delegate;
 		this.children = Collections.unmodifiableList(children);
 	}
