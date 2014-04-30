@@ -11,4 +11,12 @@ package com.atomiccomics.survey.core;
  */
 public interface Answer {
 	
+	boolean supports(Class<?> type);
+	
+	boolean isEqualTo(Object value);
+	
+	boolean isLessThan(Object value);
+	
+	boolean isGreaterThan(Object value);
+	
 }
