@@ -30,6 +30,8 @@ public final class SurveyDriver {
 	
 	private final SurveyTerminationListener listener;
 	
+	private final SurveyBlackboard blackboard;
+	
 	private ListIterator<Visible> curr;
 	
 	private Question lastAsked = null;
@@ -42,9 +44,10 @@ public final class SurveyDriver {
 	 * @param listener A {@link SurveyTerminationListener} which can receive a notification when the survey ends.
 	 */
 	public SurveyDriver(@Nonnull final Visible root, @Nonnull final QuestionAsker asker, 
-			@Nonnull final SurveyTerminationListener listener) {
+			@Nonnull final SurveyTerminationListener listener, @Nonnull final SurveyBlackboard blackboard) {
 		this.asker = asker;
 		this.listener = listener;
+		this.blackboard = blackboard;
 		curr = Lists.newArrayList(root).listIterator();
 	}
 	
@@ -98,7 +101,7 @@ public final class SurveyDriver {
 	}
 	
 	private void visit(@Nonnull Visible node, @Nonnull Direction dir) {
-		if(node != lastAsked && node.isVisible()) {
+		if(node != lastAsked && node.isVisible(blackboard)) {
 			if(node instanceof Question) {
 				Question question = (Question)node;
 				lastAsked = question;
