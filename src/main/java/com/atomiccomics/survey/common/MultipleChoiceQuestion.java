@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.atomiccomics.survey.core.Question;
 import com.atomiccomics.survey.core.VisiblePredicate;
+import com.atomiccomics.survey.engine.SurveyBlackboard;
 import com.google.common.collect.ImmutableList;
 
 public class MultipleChoiceQuestion implements Question {
@@ -25,8 +26,8 @@ public class MultipleChoiceQuestion implements Question {
 	}
 	
 	@Override
-	public boolean isVisible() {
-		return delegate.isVisible();
+	public boolean isVisible(final SurveyBlackboard blackboard) {
+		return delegate.isVisible(blackboard);
 	}
 
 	@Override

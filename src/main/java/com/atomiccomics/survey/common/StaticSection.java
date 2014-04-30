@@ -6,6 +6,7 @@ import java.util.List;
 import com.atomiccomics.survey.core.Section;
 import com.atomiccomics.survey.core.Visible;
 import com.atomiccomics.survey.core.VisiblePredicate;
+import com.atomiccomics.survey.engine.SurveyBlackboard;
 
 /**
  * The {@code StaticSection} represents a {@link Section} whose attributes are fully set at creation.
@@ -30,8 +31,8 @@ public class StaticSection implements Section {
 	}
 	
 	@Override
-	public boolean isVisible() {
-		return delegate.isVisible();
+	public boolean isVisible(final SurveyBlackboard blackboard) {
+		return delegate.isVisible(blackboard);
 	}
 
 	@Override

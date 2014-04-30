@@ -2,6 +2,7 @@ package com.atomiccomics.survey.common;
 
 import com.atomiccomics.survey.core.Question;
 import com.atomiccomics.survey.core.VisiblePredicate;
+import com.atomiccomics.survey.engine.SurveyBlackboard;
 
 public class Instructions implements Question {
 
@@ -18,8 +19,8 @@ public class Instructions implements Question {
 	}
 	
 	@Override
-	public boolean isVisible() {
-		return delegate.isVisible();
+	public boolean isVisible(final SurveyBlackboard blackboard) {
+		return delegate.isVisible(blackboard);
 	}
 
 	@Override
