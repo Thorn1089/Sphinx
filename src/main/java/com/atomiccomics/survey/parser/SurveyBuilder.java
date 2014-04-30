@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.misc.NotNull;
@@ -34,6 +36,8 @@ public class SurveyBuilder extends SphinxBaseListener {
 	
 	private final ParseTreeProperty<Question> questions = new ParseTreeProperty<>();
 	
+	private final ParseTreeProperty<VisiblePredicate> predicates = new ParseTreeProperty<>();
+	
 	{
 		questionBuilders.put("Instructions", (id, delegate, str, ans) -> 
 			new Instructions(id, delegate, str));
@@ -52,7 +56,8 @@ public class SurveyBuilder extends SphinxBaseListener {
 				.map(question -> questions.get(question))
 				.collect(toList());
 		
-		final Section section = new StaticSection(() -> true, parsedQuestions);
+		final VisiblePredicate delegate = ofNullable(predicates.get(ctx.predicate())).orElse((bb) -> true);
+		final Section section = new StaticSection(delegate, parsedQuestions);
 		sections.add(section);
 	}
 	
@@ -65,25 +70,59 @@ public class SurveyBuilder extends SphinxBaseListener {
 		String body = ctx.question_line()
 			.stream()
 			.map(q -> q.STRING().getText())
-			.map(s -> s.substring(1, s.length() - 1))
+			.map(this::stripSlashes)
 			.collect(Collectors.joining(" "))
 			.replace('\t', ' ');
-		
 		
 		String answer = ofNullable(ctx.answer())
 			.map(a -> a.answer_line())
 			.map(l -> l.stream())
 			.orElse(empty())
 			.map(a -> a.STRING().getText())
-			.map(s -> s.substring(1, s.length() - 1))
+			.map(this::stripSlashes)
 			.collect(Collectors.joining("\n"))
 			.replace('\t', ' ');
 		
-		questions.put(ctx, builder.build(id, () -> true, body, answer));
+		final VisiblePredicate delegate = ofNullable(predicates.get(ctx.predicate())).orElse((bb) -> true);
+		questions.put(ctx, builder.build(id, delegate, body, answer));
+	}
+	
+	@Override
+	public void exitPredicate(@NotNull SphinxParser.PredicateContext ctx) {
+		final String id = ctx.identifier().getText();
+		final String expectedAnswer = ctx.expected_answer().getText();
+		final Pattern pattern = Pattern.compile("\".*\"");
+		final Matcher matcher = pattern.matcher(expectedAnswer);
+		
+		final String value = (matcher.matches() ? stripSlashes(expectedAnswer) : expectedAnswer);
+		
+		final String condition = ofNullable(ctx.CONDITION()).map((c) -> c.getText()).orElse(null);
+		final VisiblePredicate subPredicate = ofNullable(predicates.get(ctx.predicate())).orElse((bb) -> true);
+		
+		final VisiblePredicate predicate = (bb) -> 
+			bb.check(id).map((ans) -> ans.isEqualTo(value)).orElse(false);
+			
+		if(condition != null) {
+			switch(condition) {
+			case "and": 
+				predicates.put(ctx, (bb) -> predicate.isVisible(bb) && subPredicate.isVisible(bb));
+				break;
+			case "or":
+				predicates.put(ctx, (bb) -> predicate.isVisible(bb) || subPredicate.isVisible(bb));
+				break;
+			default: throw new IllegalStateException("Grammar produced illegal match");
+			}
+		} else {
+			predicates.put(ctx, predicate);			
+		}
 	}
 	
 	public Visible getSurvey() {
-		return new StaticSection(() -> true, sections);
+		return new StaticSection((bb) -> true, sections);
+	}
+	
+	private String stripSlashes(final String input) {
+		return input.substring(1, input.length() - 1);
 	}
 	
 	private interface QuestionBuilder {

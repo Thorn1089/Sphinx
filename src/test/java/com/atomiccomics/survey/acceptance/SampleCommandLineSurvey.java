@@ -25,7 +25,7 @@ import com.atomiccomics.survey.engine.SurveyDriver;
 
 public class SampleCommandLineSurvey {
 	
-	private VisiblePredicate always = () -> true;
+	private VisiblePredicate always = (bb) -> true;
 	
 	public void run() {
 		try (Scanner scanner = new Scanner(System.in)) {
@@ -37,8 +37,8 @@ public class SampleCommandLineSurvey {
 			
 			MultipleChoiceQuestion multi = new MultipleChoiceQuestion("Q-03", always, "What is your favorite pizza?", 
 					Arrays.asList("Pepperoni", "Cheese", "Sausage"));
-			TrueFalseQuestion veggie = new TrueFalseQuestion("Q-04", () -> {
-				return blackboard.check("Q-03").map((answer) -> {
+			TrueFalseQuestion veggie = new TrueFalseQuestion("Q-04", (bb) -> {
+				return bb.check("Q-03").map((answer) -> {
 					final MultipleChoiceAnswer mca = (MultipleChoiceAnswer)answer;
 					return mca.getChoice().equals("Cheese");
 				}).orElse(false);
@@ -46,8 +46,8 @@ public class SampleCommandLineSurvey {
 			Section intro = new StaticSection(always, Arrays.asList(first, second, multi, veggie));
 			
 			FillInQuestion length = new FillInQuestion("V-01", always, "How long have you been a vegetarian?");
-			Section vegetarian = new StaticSection(() -> {
-				return blackboard.check("Q-04").map((answer) -> {
+			Section vegetarian = new StaticSection((bb) -> {
+				return bb.check("Q-04").map((answer) -> {
 					final TrueFalseAnswer tfa = (TrueFalseAnswer)answer;
 					return tfa.get();
 				}).orElse(false);
@@ -62,7 +62,7 @@ public class SampleCommandLineSurvey {
 			
 			final AtomicBoolean flag = new AtomicBoolean(true);
 			
-			SurveyDriver driver = new SurveyDriver(survey, asker,() -> flag.set(false));
+			SurveyDriver driver = new SurveyDriver(survey, asker,() -> flag.set(false), blackboard);
 			
 			while(flag.get()) {
 				driver.next();

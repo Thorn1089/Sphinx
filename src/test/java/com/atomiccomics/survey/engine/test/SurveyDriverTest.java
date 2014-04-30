@@ -19,6 +19,7 @@ import com.atomiccomics.survey.core.Question;
 import com.atomiccomics.survey.core.Section;
 import com.atomiccomics.survey.core.Visible;
 import com.atomiccomics.survey.engine.QuestionAsker;
+import com.atomiccomics.survey.engine.SurveyBlackboard;
 import com.atomiccomics.survey.engine.SurveyDriver;
 import com.atomiccomics.survey.engine.SurveyTerminationListener;
 
@@ -31,12 +32,15 @@ public class SurveyDriverTest {
 	@Mock
 	private SurveyTerminationListener listener;
 	
+	@Mock
+	private SurveyBlackboard blackboard;
+	
 	@Test
 	public void testForwardWithSingleQuestion() {
 		Question onlyQuestion = mock(Question.class);
-		when(onlyQuestion.isVisible()).thenReturn(true);
+		when(onlyQuestion.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener);
+		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener, blackboard);
 		driver.next();
 		
 		verify(asker).ask(onlyQuestion);
@@ -47,12 +51,12 @@ public class SurveyDriverTest {
 		Section section = mock(Section.class);
 		Question first = mock(Question.class);
 		Question second = mock(Question.class);
-		when(section.isVisible()).thenReturn(true);
+		when(section.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		when(section.children()).thenReturn(Arrays.<Visible> asList(first, second));
-		when(first.isVisible()).thenReturn(true);
-		when(second.isVisible()).thenReturn(true);
+		when(first.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
+		when(second.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(section, asker, listener);
+		SurveyDriver driver = new SurveyDriver(section, asker, listener, blackboard);
 		driver.next();
 		verify(asker).ask(first);
 	}
@@ -62,12 +66,12 @@ public class SurveyDriverTest {
 		Section section = mock(Section.class);
 		Question first = mock(Question.class);
 		Question second = mock(Question.class);
-		when(section.isVisible()).thenReturn(true);
+		when(section.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		when(section.children()).thenReturn(Arrays.<Visible> asList(first, second));
-		when(first.isVisible()).thenReturn(true);
-		when(second.isVisible()).thenReturn(true);
+		when(first.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
+		when(second.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(section, asker, listener);
+		SurveyDriver driver = new SurveyDriver(section, asker, listener, blackboard);
 		driver.next();
 		driver.next();
 		driver.previous();
@@ -84,12 +88,12 @@ public class SurveyDriverTest {
 		Section section = mock(Section.class);
 		Question first = mock(Question.class);
 		Question second = mock(Question.class);
-		when(section.isVisible()).thenReturn(true);
+		when(section.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		when(section.children()).thenReturn(Arrays.<Visible> asList(first, second));
-		when(first.isVisible()).thenReturn(false);
-		when(second.isVisible()).thenReturn(true);
+		when(first.isVisible(any(SurveyBlackboard.class))).thenReturn(false);
+		when(second.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(section, asker, listener);
+		SurveyDriver driver = new SurveyDriver(section, asker, listener, blackboard);
 		driver.next();
 		verify(asker, never()).ask(first);
 		verify(asker).ask(second);
@@ -98,9 +102,9 @@ public class SurveyDriverTest {
 	@Test
 	public void testSurveyEndedWhenAllQuestionsAsked() {
 		Question onlyQuestion = mock(Question.class);
-		when(onlyQuestion.isVisible()).thenReturn(true);
+		when(onlyQuestion.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener);
+		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener, blackboard);
 		driver.next();
 		driver.next();
 		
@@ -110,9 +114,9 @@ public class SurveyDriverTest {
 	@Test
 	public void testNothingHappensWhenTryingToGoBackBeforeFirstQuestion() {
 		Question onlyQuestion = mock(Question.class);
-		when(onlyQuestion.isVisible()).thenReturn(true);
+		when(onlyQuestion.isVisible(any(SurveyBlackboard.class))).thenReturn(true);
 		
-		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener);
+		SurveyDriver driver = new SurveyDriver(onlyQuestion, asker, listener, blackboard);
 		driver.previous();
 		verify(asker, never()).ask(any(Question.class));
 	}

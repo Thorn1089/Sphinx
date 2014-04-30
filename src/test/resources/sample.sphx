@@ -10,14 +10,14 @@ Ask Instructions I-02
 Ask TrueFalseQuestion I-03
 	"Do you understand these instructions?"
 
-Ask TrueFalseQuestion I-04
+Ask TrueFalseQuestion I-04 if I-03 is true
 	"Are you sure?"
 Answer with
 	"Yes"
 	"No"
 End section
 
-Start section Demographics
+Start section Demographics if I-03 is true and if I-04 is true
 Ask MultipleChoiceQuestion D-01
 	"What is your ethnicity?"
 Answer with
@@ -26,4 +26,7 @@ Answer with
 	"Asian"
 	"Other"
 	"I prefer not to answer"
+
+Ask Instructions D-RACIST if D-01 is "Caucasian"
+	"Racist."
 End section

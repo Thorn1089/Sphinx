@@ -55,7 +55,7 @@ public class SampleSurveyParser {
 			
 			final AtomicBoolean flag = new AtomicBoolean(true);
 			
-			SurveyDriver driver = new SurveyDriver(listener.getSurvey(), asker,() -> flag.set(false));
+			SurveyDriver driver = new SurveyDriver(listener.getSurvey(), asker,() -> flag.set(false), blackboard);
 			
 			while(flag.get()) {
 				driver.next();

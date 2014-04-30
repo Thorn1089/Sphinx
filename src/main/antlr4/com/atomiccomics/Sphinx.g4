@@ -12,7 +12,19 @@ TAB: '\t';
 
 SPACE: ' ';
 
-PERIOD: '.';
+IF: 'if';
+
+IS: 'is';
+
+MODIFIER: 'less than'
+        | 'greater than'
+        ;
+
+BOOLEAN: 'true'
+       | 'false';
+
+CONDITION: 'and'
+         | 'or';
 
 fragment LETTER: [a-zA-Z];
 
@@ -21,6 +33,8 @@ fragment NUMBER: [0-9];
 fragment SEPARATOR: ('_'|'-');
 
 TYPE: LETTER+;
+
+INT: NUMBER+;
 
 ID: (LETTER|NUMBER)+ (SEPARATOR (LETTER|NUMBER)+)+;
 
@@ -36,11 +50,11 @@ ANSWER_PROLOGUE: 'Answer with';
 
 survey: section+;
 
-section: SECTION_PROLOGUE identifier NEWLINE 
+section: SECTION_PROLOGUE identifier (SPACE predicate)? NEWLINE 
          (question NEWLINE?)+ 
          SECTION_EPILOGUE;
 
-question: QUESTION_PROLOGUE TYPE SPACE identifier NEWLINE 
+question: QUESTION_PROLOGUE TYPE SPACE identifier (SPACE predicate)? NEWLINE 
           question_line*
           answer?
         ;
@@ -53,3 +67,7 @@ answer: ANSWER_PROLOGUE NEWLINE
         answer_line+;
 
 answer_line: TAB STRING NEWLINE;
+
+predicate: IF SPACE identifier SPACE IS SPACE expected_answer (SPACE CONDITION SPACE predicate)?;
+
+expected_answer: (BOOLEAN|STRING|INT);
