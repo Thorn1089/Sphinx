@@ -8,8 +8,10 @@ import static java.util.stream.Stream.empty;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -19,10 +21,13 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import com.atomiccomics.SphinxBaseListener;
 import com.atomiccomics.SphinxParser;
+import com.atomiccomics.survey.common.FillInTextQuestion;
+import com.atomiccomics.survey.common.FillInNumberQuestion;
 import com.atomiccomics.survey.common.Instructions;
 import com.atomiccomics.survey.common.MultipleChoiceQuestion;
 import com.atomiccomics.survey.common.StaticSection;
 import com.atomiccomics.survey.common.TrueFalseQuestion;
+import com.atomiccomics.survey.core.Answer;
 import com.atomiccomics.survey.core.Question;
 import com.atomiccomics.survey.core.Section;
 import com.atomiccomics.survey.core.Visible;
@@ -38,6 +43,10 @@ public class SurveyBuilder extends SphinxBaseListener {
 	
 	private final ParseTreeProperty<VisiblePredicate> predicates = new ParseTreeProperty<>();
 	
+	private final ParseTreeProperty<AnswerComparator> predicateModifiers = new ParseTreeProperty<>();
+	
+	private final Set<String> idsSeen = new HashSet<>();
+	
 	{
 		questionBuilders.put("Instructions", (id, delegate, str, ans) -> 
 			new Instructions(id, delegate, str));
@@ -47,6 +56,10 @@ public class SurveyBuilder extends SphinxBaseListener {
 				new TrueFalseQuestion(id, delegate, str, ans.split("\n")[0], ans.split("\n")[1]));
 		questionBuilders.put("MultipleChoiceQuestion", (id, delegate, str, ans) ->
 			new MultipleChoiceQuestion(id, delegate, str, Arrays.asList(ans.split("\n"))));
+		questionBuilders.put("FillInTextQuestion", (id, delegate, str, ans) -> 
+			new FillInTextQuestion(id, delegate, str));
+		questionBuilders.put("FillInNumberQuestion", (id, delegate, str, ans) -> 
+			new FillInNumberQuestion(id, delegate, str));
 	}
 	
 	@Override
@@ -59,6 +72,11 @@ public class SurveyBuilder extends SphinxBaseListener {
 		final VisiblePredicate delegate = ofNullable(predicates.get(ctx.predicate())).orElse((bb) -> true);
 		final Section section = new StaticSection(delegate, parsedQuestions);
 		sections.add(section);
+	}
+	
+	@Override
+	public void enterQuestion(@NotNull SphinxParser.QuestionContext ctx) {
+		idsSeen.add(ctx.identifier().getText());
 	}
 	
 	@Override
@@ -90,6 +108,12 @@ public class SurveyBuilder extends SphinxBaseListener {
 	@Override
 	public void exitPredicate(@NotNull SphinxParser.PredicateContext ctx) {
 		final String id = ctx.identifier().getText();
+		
+		if(!idsSeen.contains(id)) {
+			System.err.println("No such identifier: " + id);
+			return;
+		}
+		
 		final String expectedAnswer = ctx.expected_answer().getText();
 		final Pattern pattern = Pattern.compile("\".*\"");
 		final Matcher matcher = pattern.matcher(expectedAnswer);
@@ -99,8 +123,10 @@ public class SurveyBuilder extends SphinxBaseListener {
 		final String condition = ofNullable(ctx.CONDITION()).map((c) -> c.getText()).orElse(null);
 		final VisiblePredicate subPredicate = ofNullable(predicates.get(ctx.predicate())).orElse((bb) -> true);
 		
+		AnswerComparator comparator = ofNullable(predicateModifiers.get(ctx.modifier())).orElse(Answer::isEqualTo);
+		
 		final VisiblePredicate predicate = (bb) -> 
-			bb.check(id).map((ans) -> ans.isEqualTo(value)).orElse(false);
+			bb.check(id).map((ans) -> comparator.compare(ans, value)).orElse(false);
 			
 		if(condition != null) {
 			switch(condition) {
@@ -117,6 +143,15 @@ public class SurveyBuilder extends SphinxBaseListener {
 		}
 	}
 	
+	@Override
+	public void exitModifier(@NotNull SphinxParser.ModifierContext ctx) {
+		if(ctx.LESS() != null) {
+			predicateModifiers.put(ctx, Answer::isLessThan);
+		} else if(ctx.GREATER() != null) {
+			predicateModifiers.put(ctx, Answer::isGreaterThan);
+		}
+	}
+	
 	public Visible getSurvey() {
 		return new StaticSection((bb) -> true, sections);
 	}
@@ -127,6 +162,10 @@ public class SurveyBuilder extends SphinxBaseListener {
 	
 	private interface QuestionBuilder {
 		Question build(String id, VisiblePredicate delegate, String body, String answer);
+	}
+	
+	private interface AnswerComparator {
+		boolean compare(Answer ans, Object value);
 	}
 	
 }

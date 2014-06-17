@@ -50,7 +50,8 @@ public class SampleSurveyParser {
 			CommandLineAsker asker = new CommandLineAsker();
 			asker.registerFormatter(new TrueFalseFormatter(scanner, blackboard));
 			asker.registerFormatter(new MultipleChoiceFormatter(blackboard, scanner));
-			asker.registerFormatter(new FillInQuestionFormatter(blackboard, scanner));
+			asker.registerFormatter(new FillInTextQuestionFormatter(blackboard, scanner));
+			asker.registerFormatter(new FillInNumberQuestionFormatter(blackboard, scanner));
 			asker.registerFormatter(new InstructionsFormatter(scanner));
 			
 			final AtomicBoolean flag = new AtomicBoolean(true);

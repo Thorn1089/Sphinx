@@ -21,7 +21,7 @@ public class InstructionsFormatter implements CommandLineQuestionFormatter {
 	@Override
 	public void format(Question question) {
 		Instructions q = (Instructions)question;
-		System.out.printf(q.getText());
+		System.out.printf(q.getQuestionText());
 		System.out.printf("\n\n");
 		scanner.nextLine();
 	}

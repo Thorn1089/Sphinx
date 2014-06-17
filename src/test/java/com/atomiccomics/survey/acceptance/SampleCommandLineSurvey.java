@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 
-import com.atomiccomics.survey.common.FillInQuestion;
+import com.atomiccomics.survey.common.FillInTextQuestion;
 import com.atomiccomics.survey.common.MultipleChoiceAnswer;
 import com.atomiccomics.survey.common.MultipleChoiceQuestion;
 import com.atomiccomics.survey.common.StaticSection;
@@ -45,7 +45,7 @@ public class SampleCommandLineSurvey {
 			}, "Are you a vegetarian?");
 			Section intro = new StaticSection(always, Arrays.asList(first, second, multi, veggie));
 			
-			FillInQuestion length = new FillInQuestion("V-01", always, "How long have you been a vegetarian?");
+			FillInTextQuestion length = new FillInTextQuestion("V-01", always, "How long have you been a vegetarian?");
 			Section vegetarian = new StaticSection((bb) -> {
 				return bb.check("Q-04").map((answer) -> {
 					final TrueFalseAnswer tfa = (TrueFalseAnswer)answer;
@@ -58,7 +58,7 @@ public class SampleCommandLineSurvey {
 			CommandLineAsker asker = new CommandLineAsker();
 			asker.registerFormatter(new TrueFalseFormatter(scanner, blackboard));
 			asker.registerFormatter(new MultipleChoiceFormatter(blackboard, scanner));
-			asker.registerFormatter(new FillInQuestionFormatter(blackboard, scanner));
+			asker.registerFormatter(new FillInTextQuestionFormatter(blackboard, scanner));
 			
 			final AtomicBoolean flag = new AtomicBoolean(true);
 			

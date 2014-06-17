@@ -4,31 +4,32 @@ import com.atomiccomics.survey.core.Question;
 import com.atomiccomics.survey.core.VisiblePredicate;
 import com.atomiccomics.survey.engine.SurveyBlackboard;
 
-public class FillInQuestion implements Question {
+public abstract class AbstractQuestion implements Question {
 
 	private final String id;
 	
 	private final VisiblePredicate predicate;
 	
-	private final String question;
+	private final String questionText;
 	
-	public FillInQuestion(final String id, final VisiblePredicate predicate, final String question) {
+	public AbstractQuestion(final String id, final VisiblePredicate predicate, final String questionText) {
 		this.id = id;
 		this.predicate = predicate;
-		this.question = question;
+		this.questionText = questionText;
 	}
 	
 	@Override
-	public boolean isVisible(final SurveyBlackboard blackboard) {
+	public final boolean isVisible(SurveyBlackboard blackboard) {
 		return predicate.isVisible(blackboard);
 	}
 
 	@Override
-	public String id() {
+	public final String id() {
 		return id;
 	}
-
-	public String getQuestionText() {
-		return question;
+	
+	public final String getQuestionText() {
+		return questionText;
 	}
+
 }

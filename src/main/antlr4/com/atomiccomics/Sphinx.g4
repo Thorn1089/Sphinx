@@ -16,9 +16,9 @@ IF: 'if';
 
 IS: 'is';
 
-MODIFIER: 'less than'
-        | 'greater than'
-        ;
+LESS: 'less than';
+
+GREATER: 'greater than';
 
 BOOLEAN: 'true'
        | 'false';
@@ -68,6 +68,8 @@ answer: ANSWER_PROLOGUE NEWLINE
 
 answer_line: TAB STRING NEWLINE;
 
-predicate: IF SPACE identifier SPACE IS SPACE expected_answer (SPACE CONDITION SPACE predicate)?;
+predicate: IF SPACE identifier SPACE IS (SPACE modifier)? SPACE expected_answer (SPACE CONDITION SPACE predicate)?;
+
+modifier: LESS | GREATER;
 
 expected_answer: (BOOLEAN|STRING|INT);

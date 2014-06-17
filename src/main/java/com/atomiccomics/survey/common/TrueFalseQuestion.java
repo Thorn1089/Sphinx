@@ -1,8 +1,6 @@
 package com.atomiccomics.survey.common;
 
-import com.atomiccomics.survey.core.Question;
 import com.atomiccomics.survey.core.VisiblePredicate;
-import com.atomiccomics.survey.engine.SurveyBlackboard;
 
 /**
  * The {@code TrueFalseQuestion} describes a simple question which can be answered either in the affirmative
@@ -10,13 +8,7 @@ import com.atomiccomics.survey.engine.SurveyBlackboard;
  * 
  * @author Tom
  */
-public class TrueFalseQuestion implements Question {
-
-	private final String id;
-	
-	private final VisiblePredicate delegate;
-	
-	private final String questionText;
+public final class TrueFalseQuestion extends AbstractQuestion {
 	
 	private final String trueText;
 	
@@ -32,9 +24,7 @@ public class TrueFalseQuestion implements Question {
 	 */
 	public TrueFalseQuestion(final String id, final VisiblePredicate delegate, 
 			final String questionText, final String trueText, final String falseText) {
-		this.id = id;
-		this.delegate = delegate;
-		this.questionText = questionText;
+		super(id, delegate, questionText);
 		this.trueText = trueText;
 		this.falseText = falseText;
 	}
@@ -47,23 +37,6 @@ public class TrueFalseQuestion implements Question {
 	 */
 	public TrueFalseQuestion(final String id, final VisiblePredicate delegate, final String questionText) {
 		this(id, delegate, questionText, Boolean.TRUE.toString(), Boolean.FALSE.toString());
-	}
-	
-	@Override
-	public String id() {
-		return id;
-	}
-
-	@Override
-	public boolean isVisible(final SurveyBlackboard blackboard) {
-		return delegate.isVisible(blackboard);
-	}
-	
-	/**
-	 * @return A {@code String} representing the question.
-	 */
-	public String getQuestionText() {
-		return questionText;
 	}
 	
 	/**

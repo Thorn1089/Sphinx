@@ -29,4 +29,11 @@ Answer with
 
 Ask Instructions D-RACIST if D-01 is "Caucasian"
 	"Racist."
+
+Ask FillInTextQuestion D-02 if D-01 is "Other"
+	"Please describe your ethnic background."
+
+Ask FillInNumberQuestion D-03
+	"Please enter your age."
+
 End section

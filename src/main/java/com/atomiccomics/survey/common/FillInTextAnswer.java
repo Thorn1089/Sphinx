@@ -5,13 +5,13 @@ import java.util.Set;
 import com.atomiccomics.survey.core.Answer;
 import com.google.common.collect.Sets;
 
-public class FillInAnswer implements Answer {
+public class FillInTextAnswer implements Answer {
 
 	private static final Set<Class<?>> SUPPORTED_TYPES = Sets.newHashSet(String.class);
 	
 	private final String answer;
 	
-	public FillInAnswer(final String answer) {
+	public FillInTextAnswer(final String answer) {
 		this.answer = answer;
 	}
 	
